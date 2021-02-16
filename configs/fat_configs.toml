@@ -1,0 +1,79 @@
+[mysql]
+
+[mysql.read] # 从库信息，可读
+    addr = '127.0.0.1:3306'      # MySQL 地址:端口
+    user = 'root'                # 用户名
+    pass = 'root'                # 密码
+    name = 'go_gin_api'          # 数据库名称
+[mysql.write] # 主库信息，可读写
+    addr = '127.0.0.1:3306'      # MySQL 地址:端口
+    user = 'root'                # 用户名
+    pass = 'root'                # 密码
+    name = 'go_gin_api'          # 数据库名称
+[mysql.base] # 基础配置
+    maxOpenConn = 10             # 最大打开的连接数
+    maxIdleConn = 60             # 闲置的连接数
+    connMaxLifeTime = 60         # 最大连接超时(单位:分)
+
+[redis]
+addr = '127.0.0.1:6379'          # Redis 地址:端口
+pass = ''                        # 密码
+db = 0                           # 序号从 0 开始，默认是0，可以不用设置
+maxRetries = 3                   # 命令执行失败时，最多重试多少次，默认为 0 即不重试
+poolSize = 10                    # 连接池最大连接数，默认为 CPU 数 * 10
+minIdleConns = 5                 # 最小空闲连接数
+
+[mail]
+host = 'smtp.163.com'            # 邮箱服务器，比如 smtp.163.com
+port = 465                       # 端口
+user = ""                        # 发件人邮箱
+pass = ""                        # 发件人邮箱密码或授权码，根据邮箱服务器而定
+to   = ""                        # 收件人邮箱，多个可以逗号(,)分割
+
+[jwt]
+secret = 'i1ydX9RtHyuJTrw7frcu'  # JWT secret
+expireDuration = 24              # JWT ExpiresAt 过期时间(单位:小时)
+
+[aes]
+key = 'IgkibX71IEf382PT'
+iv = 'IgkibX71IEf382PT'
+
+[rsa]
+private = '-----BEGIN RSA PRIVATE KEY-----
+MIIEpgIBAAKCAQEA1O3p0JN0/RrP7eY3f81izPf16FS0WMNGCJkd+y5c6yBzUvN0
+IEeoxiIWIBhoMKH0pzlzBg0rfttojSodOgNom/UCAzAYEgdIsNee5LSN/7e0T2/Q
+vsIAHINuA8gI8fGoGiSA2TEzpUo6aVXwhZT34GGRdrSJ+m4iVk/Kt95tavBNk+ND
+VSeb5xAjxBchT5BjAMMlE0ffGZb0MMjjO5+e9Tn8f99M2VMqpzXHXZzv1ABmqufz
+S20iWcSvnjhWcJ9hiKwO8Z30GgJyACmml+HMxLYEFN9h2MWYgxLm9Z0rLMrWwMM+
+E2rCs8tsxAD5sO9RZMJPl1C0FIsMR53ngqbzowIDAQABAoIBAQCO1RE1ItUlO6kj
+Un0ENAgEqojAUqGvsT33Yo7kAZO+/cOeb0UEqk0iq5bf7L9ncBynWDg6ZPc6X3/g
+wdFdKxAvHck9zjM3VL+EMP+bNyrR0K8ZYk5Kx+Q/PEK+Mp8dfRdgggAUsZaNWB+a
+rVVspiMo1wo28KBl5x8NevTnJkOLqXAyB7UyLWqnOL1fb988lZvZPR7ZUYroVIZa
+pyXtZcafIJeKyQ3bvWI5+eFqOe61Z4Bx1+TpfZ3fKfSDW0vhxzNqaimOa8jSXtMJ
+jMeOctL4nZ0TPo/jS3I+XlaH4ZQlFLuUWGscpxwfEeBN23I8HRLkZXJsw66yvRN3
+s4bUKPXRAoGBAP/3oSZAECvfsYYzs76tnrAmR/0GxCqgguxDlWn5DowQzdWFOdHC
+ZbTo/hUVoMSQnO1EKCFlnBS+wg/3TuIzUO0ewC1aeT7qHbOMDl0zKbNpS2Z9/j+U
+zro+qz7XmkWolMCfmDrCrw9CtCxcMSII+ajbI8SAgFVMz9XnDt+xW9E9AoGBANT0
+4F6kCUJTEyqf2+v84tjQ2wGIF6XtZPU9JR806zeMyahQ9F6z3hY8BYb0tIy5b3uJ
+VlJ9TG1qg/t59TWxIq43mYSUJHe0aJi3ilooObQtHlhPu8nwmmX47sX0PyG2hMoD
+kBVxTpTDmBaDz7O9uBnlMXJN5qEygctaixpEbmZfAoGBAMBA9kEMjRjnAyeRXcgy
+D6aumhNqKZz6wltCx864yjxZwsBFOJBcOpgPCAg+HmqFU9jCAIJVF05dmNT1I8Ky
+WG5BUoa+FaMzpOtenstRylh/Far9pyGKW1t4BpdEyRLY9CFZvbUk1OfZagqHlD/E
+DgDN16eX/MwUzWYUDg/l3tjhAoGBAKGip/ZNjVWRFpggs9z/mfK1O7WC5Wgksp9N
+ZLK2CN6l9p3RrFmBLk00C4HulGfHi+15RVLhFbRqx3iFje/N3iPbwaMWikNtZIKd
+tN5Pb9To9gJTqpZRD+/cLOeFRrHBBjMK1z7fPKS/fN2B+JFVq7nD827t3+J0In4F
+4FT0odMDAoGBAJk3ELB/FHY8xzZ4jF1wG/a1CK681Xm6SuU5KIELDSAUNoou6OPG
+mS8gU20MMPAeV2z7khyDcSxlHsUyL73eLeaakbQov9NMW7cc99XX4wnP4W7FRpmr
+QbHmKuHIRFHCFv+XX8c0aK2mDZMUlzJdy4FgD/YCEZ7kZMZKyvZW/ZuV
+-----END RSA PRIVATE KEY-----'
+
+public = '-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1O3p0JN0/RrP7eY3f81i
+zPf16FS0WMNGCJkd+y5c6yBzUvN0IEeoxiIWIBhoMKH0pzlzBg0rfttojSodOgNo
+m/UCAzAYEgdIsNee5LSN/7e0T2/QvsIAHINuA8gI8fGoGiSA2TEzpUo6aVXwhZT3
+4GGRdrSJ+m4iVk/Kt95tavBNk+NDVSeb5xAjxBchT5BjAMMlE0ffGZb0MMjjO5+e
+9Tn8f99M2VMqpzXHXZzv1ABmqufzS20iWcSvnjhWcJ9hiKwO8Z30GgJyACmml+HM
+xLYEFN9h2MWYgxLm9Z0rLMrWwMM+E2rCs8tsxAD5sO9RZMJPl1C0FIsMR53ngqbz
+owIDAQAB
+-----END PUBLIC KEY-----'
+
