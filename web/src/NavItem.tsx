@@ -4,8 +4,8 @@ import HomeIcon from "./icons/home.svg";
 function NavItem() {
   return (
     <div className="text-center text-white">
-      <img src={HomeIcon} className="w-10 h-10 mx-auto fill-current"></img>
-      <span className="text-sm">首页</span>
+      <img src={HomeIcon} className="w-8 h-8 mx-auto fill-current"></img>
+      <span className="text-xs">首页</span>
     </div>
   );
 }
