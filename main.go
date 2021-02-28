@@ -2,14 +2,57 @@ package main
 
 import (
 	"context"
+	"github.com/gorilla/sessions"
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
+	"github.com/markbates/goth"
+	"github.com/markbates/goth/gothic"
+	"github.com/robinWongM/attendance/internal/pkg/sso"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
 )
+
+func initAuth(e *echo.Echo) {
+	goth.UseProviders(
+		sso.New(os.Getenv("ECNC_SSO_CLIENT_KEY"), os.Getenv("ECNC_SSO_CLIENT_SECRET"), "http://localhost:8080/api/auth/callback"),
+	)
+	e.GET("/api/auth/callback", func(c echo.Context) error {
+		user, err := gothic.CompleteUserAuth(c.Response(), c.Request())
+		if err != nil {
+			e.Logger.Error(err)
+		}
+
+		sess, err := session.Get("ecnc-attendance", c)
+		if err != nil {
+			e.Logger.Error(err)
+		}
+
+		sess.Values["user"] = user
+		sess.Save(c.Request(), c.Response())
+
+		return c.JSON(http.StatusOK, user)
+	})
+
+	e.GET("/api/auth", func(c echo.Context) error {
+		// try to get the user without re-authenticating
+		sess, err := session.Get("ecnc-attendance", c)
+		if err != nil {
+			return err
+		}
+
+		user := sess.Values["user"]
+		if user != nil {
+			return c.JSON(http.StatusOK, user)
+		} else {
+			gothic.BeginAuthHandler(c.Response(), c.Request())
+			return nil
+		}
+	})
+}
 
 func main() {
 	// Echo instance
@@ -20,6 +63,9 @@ func main() {
 	e.Use(middleware.RequestID())
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(session.Middleware(sessions.NewFilesystemStore("", []byte(os.Getenv("ECNC_SESSION_KEY")))))
+
+	initAuth(e)
 
 	e.GET("/long", func(c echo.Context) error {
 		time.Sleep(10 * time.Second)
@@ -31,7 +77,7 @@ func main() {
 
 	// Start server
 	go func() {
-		if err := e.Start(":1323"); err != nil && err != http.ErrServerClosed {
+		if err := e.Start(":8080"); err != nil && err != http.ErrServerClosed {
 			e.Logger.Fatal(err)
 		}
 	}()
