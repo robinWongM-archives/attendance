@@ -2,48 +2,57 @@ package main
 
 import (
 	"context"
-	"github.com/kataras/iris/v12"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/gommon/log"
+	"net/http"
+	"os"
+	"os/signal"
 	"time"
 )
 
 func main() {
-	app := iris.New()
-	// Load all templates from the "./views" folder
-	// where extension is ".html" and parse them
-	// using the standard `html/template` package.
-	app.RegisterView(iris.HTML("./views", ".html"))
+	// Echo instance
+	e := echo.New()
+	e.Logger.SetLevel(log.INFO)
 
-	// Method:    GET
-	// Resource:  http://localhost:8080
-	app.Get("/", func(ctx iris.Context) {
-		// Bind: {{.message}} with "Hello world!"
-		ctx.ViewData("message", "Hello world!")
-		// Render template file: ./views/hello.html
-		ctx.View("hello.html")
+	// Middleware
+	e.Use(middleware.RequestID())
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+
+	e.GET("/long", func(c echo.Context) error {
+		time.Sleep(10 * time.Second)
+		return c.JSON(http.StatusOK, "OK")
 	})
 
-	// Method:    GET
-	// Resource:  http://localhost:8080/user/42
-	//
-	// Need to use a custom regexp instead?
-	// Easy;
-	// Just mark the parameter's type to 'string'
-	// which accepts anything and make use of
-	// its `regexp` macro function, i.e:
-	// app.Get("/user/{id:string regexp(^[0-9]+$)}")
-	app.Get("/user/{id:uint64}", func(ctx iris.Context) {
-		userID, _ := ctx.Params().GetUint64("id")
-		ctx.Writef("User ID: %d", userID)
-	})
+	// Routes
+	e.GET("/", hello)
 
-	iris.RegisterOnInterrupt(func() {
-		timeout := 5 * time.Second
-		ctx, cancel := context.WithTimeout(context.Background(), timeout)
-		defer cancel()
-		// close all hosts
-		app.Shutdown(ctx)
-	})
+	// Start server
+	go func() {
+		if err := e.Start(":1323"); err != nil && err != http.ErrServerClosed {
+			e.Logger.Fatal(err)
+		}
+	}()
 
-	// Start the server using a network address.
-	app.Listen(":8080", iris.WithoutInterruptHandler)
+	// Wait for interrupt signal to gracefully shutdown the server with a timeout of 10 seconds.
+	// Use a buffered channel to avoid missing signals as recommended for signal.Notify
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
+
+	e.Logger.Info("Received interrupt signal, shutting down the server gracefully")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := e.Shutdown(ctx); err != nil {
+		e.Logger.Fatal(err)
+	}
+}
+
+// Handler
+func hello(c echo.Context) error {
+	return c.String(http.StatusOK, "Hello, World!")
 }
